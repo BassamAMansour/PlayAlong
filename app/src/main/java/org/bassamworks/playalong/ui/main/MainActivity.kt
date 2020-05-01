@@ -1,4 +1,4 @@
-package org.bassamworks.playalong
+package org.bassamworks.playalong.ui.main
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -8,8 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.nearby.Nearby
+import org.bassamworks.playalong.R
 import org.bassamworks.playalong.files.FilesManager.clearCacheFiles
-import org.bassamworks.playalong.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,7 +27,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun requestAppPermissions() {
         if (checkPermissionsGranted(REQUIRED_PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, RC_PERMISSIONS)
+            ActivityCompat.requestPermissions(
+                this,
+                REQUIRED_PERMISSIONS,
+                RC_PERMISSIONS
+            )
         }
     }
 

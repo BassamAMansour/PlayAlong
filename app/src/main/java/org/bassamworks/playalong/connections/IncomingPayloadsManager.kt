@@ -52,7 +52,6 @@ object IncomingPayloadsManager : PayloadCallback() {
         }
     }
 
-
     private fun handleFile(filePayload: Payload) {
         incomingFiles[filePayload.id] = filePayload
     }
@@ -62,20 +61,20 @@ object IncomingPayloadsManager : PayloadCallback() {
     }
 
     private fun handleBytes(endpointId: String, bytes: ByteArray) {
-        val string = String(bytes, StandardCharsets.UTF_8)
+        val message = String(bytes, StandardCharsets.UTF_8)
 
-        when (getStringType(string)) {
-            StringType.CONTROL -> TODO()
-            StringType.FILE_NAME -> addToIncomingFilenames(endpointId, string)
-            StringType.OTHER -> listeners.forEach { it.onStringReceived(endpointId, string) }
+        when (getMessageType(message)) {
+            MessageType.CONTROL -> TODO()
+            MessageType.FILE_NAME -> addToIncomingFilenames(endpointId, message)
+            MessageType.OTHER -> listeners.forEach { it.onStringReceived(endpointId, message) }
         }
     }
 
-    private fun addToIncomingFilenames(endpointId: String, string: String) {
-        val splitString = string.split(":")
+    private fun addToIncomingFilenames(endpointId: String, message: String) {
+        val splitMessage = message.split(MESSAGE_DELIMITER)
 
-        val payloadId = splitString[1].toLong()
-        val fileName = splitString[2]
+        val payloadId = splitMessage[1].toLong()
+        val fileName = splitMessage[2]
 
         incomingFileNames[payloadId] = fileName
 
@@ -96,14 +95,13 @@ object IncomingPayloadsManager : PayloadCallback() {
         }
     }
 
-
-    private fun getStringType(string: String): StringType {
-        val splitString = string.split(":")
+    private fun getMessageType(string: String): MessageType {
+        val splitString = string.split(MESSAGE_DELIMITER)
 
         return when (splitString[0]) {
-            OutgoingPayloadsManager.PREFIX_FILE -> StringType.FILE_NAME
-            //TODO:Check for control messages
-            else -> StringType.OTHER
+            MessageType.FILE_NAME.prefix -> MessageType.FILE_NAME
+            MessageType.CONTROL.prefix -> MessageType.CONTROL
+            else -> MessageType.OTHER
         }
     }
 
@@ -120,6 +118,4 @@ object IncomingPayloadsManager : PayloadCallback() {
         fun onStreamReceived(endpointId: String, stream: Payload.Stream)
         fun onStringReceived(endpointId: String, string: String)
     }
-
-    enum class StringType { CONTROL, FILE_NAME, OTHER }
 }

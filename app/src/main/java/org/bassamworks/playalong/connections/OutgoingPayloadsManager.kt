@@ -2,8 +2,6 @@ package org.bassamworks.playalong.connections
 
 import android.content.Context
 import android.net.Uri
-import android.provider.OpenableColumns
-import android.webkit.MimeTypeMap
 import com.google.android.gms.nearby.connection.Payload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +10,6 @@ import kotlinx.coroutines.launch
 import org.bassamworks.playalong.files.FilesManager.getExtension
 import org.bassamworks.playalong.files.FilesManager.getFileName
 import timber.log.Timber
-import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
 
@@ -26,7 +23,8 @@ object OutgoingPayloadsManager {
             try {
                 val payload = Payload.fromFile(context.contentResolver.openFileDescriptor(fileUri, "r")!!)
                 val filename = "${context.getFileName(fileUri)}.${context.getExtension(fileUri)}"
-                val sentName = "$PREFIX_FILE:${payload.id}:${filename}"
+                val sentName =
+                    "${MessageType.FILE_NAME.prefix}${MESSAGE_DELIMITER}${payload.id}${MESSAGE_DELIMITER}${filename}"
 
                 sendPayload(endpointId, Payload.fromBytes(sentName.toByteArray()))
                 sendPayload(endpointId, payload)
@@ -44,6 +42,4 @@ object OutgoingPayloadsManager {
     fun NearbyConnectionOrchestrator.sendStream(endpointId: String, inputStream: InputStream) {
         sendPayload(endpointId, Payload.fromStream(inputStream))
     }
-
-    const val PREFIX_FILE = "FILE"
 }

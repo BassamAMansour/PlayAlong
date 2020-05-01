@@ -14,7 +14,8 @@ import com.google.android.gms.nearby.connection.Payload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import org.bassamworks.playalong.PreferenceConstants
+import org.bassamworks.playalong.Injector.provideAdvertiserOrchestrator
+import org.bassamworks.playalong.Injector.provideDiscovererOrchestrator
 import org.bassamworks.playalong.connections.AdvertiserOrchestrator
 import org.bassamworks.playalong.connections.DiscovererOrchestrator
 import org.bassamworks.playalong.connections.IncomingPayloadsManager
@@ -22,6 +23,7 @@ import org.bassamworks.playalong.connections.NearbyConnectionOrchestrator
 import org.bassamworks.playalong.connections.NearbyConnectionOrchestrator.ConnectionCallbacks
 import org.bassamworks.playalong.connections.NearbyConnectionOrchestrator.DiscovererCallbacks
 import org.bassamworks.playalong.connections.OutgoingPayloadsManager.sendFile
+import org.bassamworks.playalong.preferences.PreferenceConstants
 import timber.log.Timber
 import java.util.*
 
@@ -100,7 +102,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app), IncomingPayloadsM
     private lateinit var connectionOrchestrator: NearbyConnectionOrchestrator
 
     private val advertiserOrchestrator: AdvertiserOrchestrator by lazy {
-        val orchestrator = AdvertiserOrchestrator(app, username, advertiserConnectionCallback)
+        val orchestrator =
+            provideAdvertiserOrchestrator(app, username, advertiserConnectionCallback)
 
         connectedEndpoints.addSource(orchestrator.connectedEndpoints) { connectedEndpoints.value = it }
         connectionOrchestrator = orchestrator
@@ -109,7 +112,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app), IncomingPayloadsM
     }
 
     private val discovererOrchestrator: DiscovererOrchestrator by lazy {
-        val orchestrator = DiscovererOrchestrator(app, username, discovererConnectionCallback, discovererCallback)
+        val orchestrator =
+            provideDiscovererOrchestrator(app, username, discovererConnectionCallback, discovererCallback)
 
         connectedEndpoints.addSource(orchestrator.connectedEndpoints) { connectedEndpoints.value = it }
         connectionOrchestrator = orchestrator
@@ -127,7 +131,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app), IncomingPayloadsM
 
     fun sendAudio(uri: Uri) {
         connectedEndpoints.value?.forEach {
-            connectionOrchestrator?.sendFile(it, uri, getApplication())
+            connectionOrchestrator.sendFile(it, uri, getApplication())
         }
     }
 

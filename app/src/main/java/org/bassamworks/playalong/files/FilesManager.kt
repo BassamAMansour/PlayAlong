@@ -30,7 +30,6 @@ object FilesManager {
                 Timber.e(e)
                 null
             } finally {
-                //TODO:Delete the transferred file
                 val delete = filePayload.asJavaFile()?.parentFile?.deleteRecursively()
                 Timber.v("Nearby temporary file deletion success: $delete")
             }

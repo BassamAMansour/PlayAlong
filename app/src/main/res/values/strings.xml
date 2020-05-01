@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">PlayAlong</string>
+    <string name="pause">Pause</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="now_playing_channel_description">Shows the Now Playing media</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="play">Play</string>
 </resources>
